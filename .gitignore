@@ -1,4 +1,6 @@
-private.key
+private_ecdsa.key
+private_x509.key
+certificate.crt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
