@@ -1,6 +1,6 @@
 import base64, json
 
-import ecdsa, signing_spec, x509
+from src import dsse, ecdsa, x509
 
 payloadType = 'http://example.com/HelloWorld'
 message = b"hello world!"
@@ -10,13 +10,13 @@ print()
 
 signer_ecdsa = ecdsa.Signer.create()
 verifier_ecdsa = ecdsa.Verifier(signer_ecdsa.public_key)
-dsse_signature = signing_spec.Sign(payloadType, message, signer_ecdsa)
+dsse_signature = dsse.Sign(payloadType, message, signer_ecdsa)
 
 print("--- DSSE JSON ---")
 print(dsse_signature)
 print()
 
-result = signing_spec.Verify(dsse_signature, [('mykey_ecdsa', verifier_ecdsa)])
+result = dsse.Verify(dsse_signature, [('mykey_ecdsa', verifier_ecdsa)])
 
 print("--- Verification status ---")
 print(result)
@@ -27,13 +27,13 @@ print()
 
 signer_x509 = x509.Signer.create()
 verifier_x509 = x509.Verifier(signer_x509.certificate)
-dsse_signature = signing_spec.Sign(payloadType, message, signer_x509)
+dsse_signature = dsse.Sign(payloadType, message, signer_x509)
 
 print("--- DSSE JSON ---")
 print(dsse_signature)
 print()
 
-result = signing_spec.Verify(dsse_signature, [('mykey_x509', verifier_x509)])
+result = dsse.Verify(dsse_signature, [('mykey_x509', verifier_x509)])
 
 print("--- Verification status ---")
 print(result)
