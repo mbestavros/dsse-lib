@@ -1,6 +1,4 @@
-"""Example crypto implementation: ECDSA with deterministic-rfc6979 and SHA256.
-
-Copyright 2021 Google LLC.
+"""ECDSA signing/verification implementation.
 SPDX-License-Identifier: Apache-2.0
 """
 

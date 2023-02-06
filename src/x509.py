@@ -1,4 +1,5 @@
 """x509 signing/verification implementation.
+SPDX-License-Identifier: Apache-2.0
 """
 
 import base64, hashlib
@@ -16,7 +17,7 @@ import datetime
 class Signer:
     def __init__(self, secret_key):
         self.secret_key = secret_key
-        self.certificate = self.derive(secret_key)
+        self.certificate = self.construct(secret_key)
 
     @classmethod
     def create(self):
@@ -30,7 +31,7 @@ class Signer:
         return Signer(private_key)
 
     @classmethod
-    def derive(self, private_key, subject_name="dsse_lib", issuer_name="dsse_lib", subject_alternative_name="dsse_lib", expiration=30):
+    def construct(self, private_key, subject_name="dsse_lib", issuer_name="dsse_lib", subject_alternative_name="dsse_lib", expiration=30):
         one_day = datetime.timedelta(1, 0, 0)
         public_key = private_key.public_key()
         builder = x509.CertificateBuilder()

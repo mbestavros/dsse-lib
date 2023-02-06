@@ -1,47 +1,11 @@
-r"""Reference implementation of signing-spec.
+r"""DSSE signing implementation.
 
-Copyright 2021 Google LLC.
+Based on the reference implementation at: https://github.com/secure-systems-lab/dsse/tree/master/implementation.
+
 SPDX-License-Identifier: Apache-2.0
-
-The following example requires `pip3 install pycryptodome` and uses ecdsa.py in
-the same directory as this file.
-
->>> import os, sys
->>> from pprint import pprint
->>> sys.path.insert(0, os.path.dirname(__file__))
->>> import ecdsa
-
->>> signer = ecdsa.Signer.construct(
-...     curve='P-256',
-...     d=97358161215184420915383655311931858321456579547487070936769975997791359926199,
-...     point_x=46950820868899156662930047687818585632848591499744589407958293238635476079160,
-...     point_y=5640078356564379163099075877009565129882514886557779369047442380624545832820)
->>> verifier = ecdsa.Verifier(signer.public_key)
->>> payloadType = 'http://example.com/HelloWorld'
->>> payload = b'hello world'
-
-Signing example:
-
->>> signature_json = Sign(payloadType, payload, signer)
->>> pprint(json.loads(signature_json))
-{'payload': 'aGVsbG8gd29ybGQ=',
- 'payloadType': 'http://example.com/HelloWorld',
- 'signatures': [{'keyid': '66301bbf',
-                 'sig': 'A3JqsQGtVsJ2O2xqrI5IcnXip5GToJ3F+FnZ+O88SjtR6rDAajabZKciJTfUiHqJPcIAriEGAHTVeCUjW2JIZA=='}]}
-
-Verification example:
-
->>> result = Verify(signature_json, [('mykey', verifier)])
->>> pprint(result)
-VerifiedPayload(payloadType='http://example.com/HelloWorld', payload=b'hello world', recognizedSigners=['mykey'])
-
-PAE:
-
->>> PAE(payloadType, payload)
-b'DSSEv1 29 http://example.com/HelloWorld 11 hello world'
 """
 
-import base64, binascii, dataclasses, json, struct
+import base64, binascii, dataclasses, json
 
 # Protocol requires Python 3.8+.
 from typing import Iterable, List, Optional, Protocol, Tuple

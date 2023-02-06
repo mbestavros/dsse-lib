@@ -1,3 +1,8 @@
+"""Example usage of dsse-lib
+
+SPDX-License-Identifier: Apache-2.0
+"""
+
 import base64, json
 
 from src import dsse, ecdsa, x509
