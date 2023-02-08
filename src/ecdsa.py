@@ -15,9 +15,9 @@ class Signer:
         self.public_key = self.secret_key.public_key()
 
     @classmethod
-    def create(self):
+    def create(self, keypath="private_ecdsa.key"):
         private_key = ec.generate_private_key(ec.SECP256R1(), default_backend())
-        with open("private_ecdsa.key", 'wb') as pem_out:
+        with open(keypath, 'wb') as pem_out:
             pem_out.write(private_key.private_bytes(
                 encoding=serialization.Encoding.PEM,
                 format=serialization.PrivateFormat.TraditionalOpenSSL,
