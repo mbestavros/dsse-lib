@@ -48,10 +48,18 @@ def b64enc(m: bytes) -> str:
 
 def b64dec(m: str) -> bytes:
     m = m.encode('utf-8')
+
+    decoded = None
     try:
-        return base64.b64decode(m, validate=True)
+        decoded = binascii.unhexlify(m)
     except binascii.Error:
-        return base64.b64decode(m, altchars='-_', validate=True)
+        pass
+    if not decoded:
+        try:
+            decoded = base64.b64decode(m, validate=True)
+        except binascii.Error:
+            decoded = base64.b64decode(m, altchars='-_', validate=True)
+    return decoded
 
 
 def PAE(payloadType: str, payload: bytes) -> bytes:
@@ -74,7 +82,7 @@ def Sign(payloadType: str, payload: bytes, signer: Signer) -> str:
     })
 
 
-def Verify(json_signature: str, verifiers: VerifierList) -> VerifiedPayload:
+def Verify(json_signature: str, verifiers: VerifierList, strict_id_matching: Optional[bool]=False) -> VerifiedPayload:
     wrapper = json.loads(json_signature)
     payloadType = wrapper['payloadType']
     payload = b64dec(wrapper['payload'])
@@ -82,7 +90,8 @@ def Verify(json_signature: str, verifiers: VerifierList) -> VerifiedPayload:
     recognizedSigners = []
     for signature in wrapper['signatures']:
         for name, verifier in verifiers:
-            if (signature.get('keyid') is not None and
+            if (strict_id_matching and
+                signature.get('keyid') is not None and
                 verifier.keyid() is not None and
                 signature.get('keyid') != verifier.keyid()):
                 continue
