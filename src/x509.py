@@ -23,51 +23,67 @@ class Signer:
     def create(self, keypath="private_x509.key"):
         private_key = ec.generate_private_key(ec.SECP256R1(), default_backend())
         with open(keypath, "wb") as pem_out:
-            pem_out.write(private_key.private_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PrivateFormat.TraditionalOpenSSL,
-                encryption_algorithm=serialization.NoEncryption()
-            ))
+            pem_out.write(
+                private_key.private_bytes(
+                    encoding=serialization.Encoding.PEM,
+                    format=serialization.PrivateFormat.TraditionalOpenSSL,
+                    encryption_algorithm=serialization.NoEncryption(),
+                )
+            )
         return Signer(private_key)
 
     @classmethod
-    def construct(self, private_key, subject_name="dsse_lib", issuer_name="dsse_lib", subject_alternative_name="dsse_lib", expiration=30):
+    def construct(
+        self,
+        private_key,
+        subject_name="dsse_lib",
+        issuer_name="dsse_lib",
+        subject_alternative_name="dsse_lib",
+        expiration=30,
+    ):
         one_day = datetime.timedelta(1, 0, 0)
         public_key = private_key.public_key()
         builder = x509.CertificateBuilder()
-        builder = builder.subject_name(x509.Name([
-            x509.NameAttribute(NameOID.COMMON_NAME, subject_name),
-        ]))
-        builder = builder.issuer_name(x509.Name([
-            x509.NameAttribute(NameOID.COMMON_NAME, issuer_name),
-        ]))
+        builder = builder.subject_name(
+            x509.Name(
+                [
+                    x509.NameAttribute(NameOID.COMMON_NAME, subject_name),
+                ]
+            )
+        )
+        builder = builder.issuer_name(
+            x509.Name(
+                [
+                    x509.NameAttribute(NameOID.COMMON_NAME, issuer_name),
+                ]
+            )
+        )
         builder = builder.not_valid_before(datetime.datetime.today() - one_day)
-        builder = builder.not_valid_after(datetime.datetime.today() + (one_day * expiration))
+        builder = builder.not_valid_after(
+            datetime.datetime.today() + (one_day * expiration)
+        )
         builder = builder.serial_number(x509.random_serial_number())
         builder = builder.public_key(public_key)
         builder = builder.add_extension(
-            x509.SubjectAlternativeName(
-                [x509.DNSName(subject_alternative_name)]
-            ),
-            critical=False
+            x509.SubjectAlternativeName([x509.DNSName(subject_alternative_name)]),
+            critical=False,
         )
         builder = builder.add_extension(
-            x509.BasicConstraints(ca=False, path_length=None), critical=True,
+            x509.BasicConstraints(ca=False, path_length=None),
+            critical=True,
         )
         certificate = builder.sign(
-            private_key=private_key, algorithm=hashes.SHA256(),
+            private_key=private_key,
+            algorithm=hashes.SHA256(),
         )
 
-        with open("certificate.crt", 'wb') as crt_out:
+        with open("certificate.crt", "wb") as crt_out:
             crt_out.write(certificate.public_bytes(encoding=serialization.Encoding.PEM))
         return certificate
 
     def sign(self, message: bytes) -> bytes:
         """Returns the signature of `message`."""
-        artifact_signature = self.secret_key.sign(
-            message,
-            ec.ECDSA(hashes.SHA256())
-        )
+        artifact_signature = self.secret_key.sign(message, ec.ECDSA(hashes.SHA256()))
         return artifact_signature
 
     def keyid(self) -> str:
@@ -90,4 +106,6 @@ class Verifier:
 
     def keyid(self) -> str:
         """Returns the base64-encoded certificate."""
-        return base64.b64encode(self.certificate.public_bytes(encoding=serialization.Encoding.PEM)).decode()
+        return base64.b64encode(
+            self.certificate.public_bytes(encoding=serialization.Encoding.PEM)
+        ).decode()

@@ -7,7 +7,7 @@ import base64, json
 
 from src import dsse, ecdsa, x509
 
-payloadType = 'http://example.com/HelloWorld'
+payloadType = "http://example.com/HelloWorld"
 message = b"hello world!"
 
 print("--- DSSE - ECDSA DEMO ---")
@@ -21,7 +21,7 @@ print("--- DSSE JSON ---")
 print(dsse_signature)
 print()
 
-result = dsse.Verify(dsse_signature, [('mykey_ecdsa', verifier_ecdsa)])
+result = dsse.Verify(dsse_signature, [("mykey_ecdsa", verifier_ecdsa)])
 
 print("--- Verification status ---")
 print(result)
@@ -38,7 +38,7 @@ print("--- DSSE JSON ---")
 print(dsse_signature)
 print()
 
-result = dsse.Verify(dsse_signature, [('mykey_x509', verifier_x509)])
+result = dsse.Verify(dsse_signature, [("mykey_x509", verifier_x509)])
 
 print("--- Verification status ---")
 print(result)
