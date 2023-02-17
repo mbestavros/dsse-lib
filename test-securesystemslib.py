@@ -101,6 +101,9 @@ result = dsse.Verify(
 )
 print(result)
 
+print()
+print("--- Verify with test files ---")
+
 with open("test_data/runtime-policy-pubkey.pub", "rb") as f:
     pubkey = f.read()
 
@@ -116,7 +119,16 @@ payloadType = "application/vnd.keylime+json"
 
 verifier_ecdsa = ecdsa.Verifier(pubkey)
 
-result = dsse.Verify(policy_bad, [("mykey_ecdsa", verifier_ecdsa)])
+print()
+print("--- Verification status (good file) ---")
 
-print("--- Verification status ---")
+result = dsse.Verify(policy, [("mykey_ecdsa", verifier_ecdsa)])
 print(result)
+
+print()
+print("--- Verification status (bad file) ---")
+
+try:
+    result = dsse.Verify(policy_bad, [("mykey_ecdsa", verifier_ecdsa)])
+except Exception as e:
+    print(f"DSSE verification failed! Error: {e}")
